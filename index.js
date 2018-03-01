@@ -2,31 +2,45 @@ const fs = require('fs');
 const jsdom = require("jsdom");
 const $ = require('jquery');
 const { JSDOM } = jsdom;
-const tasks = require('./data.json');
+// const tasks = require('./data.json');
 
-const result = {};
-
+const result = {
+    success: [],
+    fail: []
+};
+let count = 0;
+const taskRunned = {};
+const tasks = [{href: 'http://www.huaweicloud.com/'}];
+const isEnd = () => {
+    if (tasks.length) {
+        runTask(tasks);
+    } else {
+        fs.writeFileSync('result.json', JSON.stringify(result, null, 2));
+    }
+}
+const resolveUrl = (url) => {
+    return url.split('?')[0].split('#')[0];
+}
 const runTask = (tasks) => {
     const task = tasks.shift();
-    console.log(task.href)
+    if (taskRunned[task.href]) {
+        isEnd();
+    }
+    taskRunned[task.href] = true;
     JSDOM.fromURL(task.href, { runScripts: "outside-only" }).then(dom => {
-        $(dom.window.parent).find('script').forEach((el, idx) => {
-            if (el.src.indexOf(',') > -1  && el.src.indexOf('??') > -1) {
-                const modules = el.src.split('??')[1].split(',');
-                modules.forEach((el) => {
-                    if (result[el]) {
-                        result[el] = result[el] + 1;    
-                    } else {
-                        result[el] = 1;
-                    }
-                })
+        console.log(count++, task.href);
+        result.success.push({link: task.href});
+        $(dom.window.parent).find('a').forEach((el, idx) => {
+            const href = resolveUrl(el.href);
+            if (href.startsWith('http://www.huaweicloud.com') && (!taskRunned[href])) {
+                tasks.push({href});
             }
+            // console.log(tasks.length)
+            isEnd();
         });
-        if (tasks.length) {
-            runTask(tasks);
-        } else {
-            fs.writeFileSync('result.json', JSON.stringify(result, null, 2));
-        }
+    }, data => {
+        result.fail.push({link: task.href, cause: data});
+        isEnd();
     });
 }
 
