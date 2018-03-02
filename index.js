@@ -32,10 +32,12 @@ const runTask = (tasks) => {
         result.success.push({link: task.href});
         $(dom.window.parent).find('a').forEach((el, idx) => {
             const href = resolveUrl(el.href);
-            if (href.startsWith('http://www.huaweicloud.com') && (!taskRunned[href])) {
+            if ((href.startsWith('http://www.huaweicloud.com') 
+                || href.startsWith('http://support.huaweicloud.com')
+                || href.startsWith('http://activity.huaweicloud.com'))
+                && (!taskRunned[href])) {
                 tasks.push({href});
             }
-            // console.log(tasks.length)
             isEnd();
         });
     }, data => {
