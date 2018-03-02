@@ -39,7 +39,10 @@ const runTask = (tasks) => {
             isEnd();
         });
     }, data => {
-        result.fail.push({link: task.href, cause: data});
+        result.fail.push({link: task.href, cause: {
+            "name": data.name,
+            "statusCode": data.statusCode
+        }});
         isEnd();
     });
 }
