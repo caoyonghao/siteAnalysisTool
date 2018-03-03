@@ -34,7 +34,7 @@ const runTask = function (tasks) {
                 links: []
             };
             $('a').each(function(idx, el) {
-                result.links.push({
+                tmp.links.push({
                     link: $(el).attr('href')
                 });
             });
