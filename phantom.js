@@ -33,12 +33,12 @@ const runTask = function (tasks) {
                 host: window.location.host,
                 links: []
             };
-            $('a').forEach(function(idx, el) {
+            $('a').each(function(idx, el) {
                 result.links.push({
                     link: $(el).attr('href')
                 });
             });
-            return JSON.stringify(tmp);
+            return tmp;
         });
         console.log(links);
         // const href = resolveUrl(el.href);
