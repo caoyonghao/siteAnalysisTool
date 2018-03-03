@@ -7,7 +7,7 @@ const result = {
     success: [],
     fail: []
 };
-let count = 0;
+
 const taskRunned = {};
 const tasks = [{href: 'http://www.huaweicloud.com/'}];
 const isEnd = () => {
