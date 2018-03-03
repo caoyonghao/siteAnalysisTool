@@ -21,7 +21,7 @@ const tasks = [{href: 'http://www.huaweicloud.com/'}];
 // const resolveUrl = (url) => {
 //     return url.split('?')[0].split('#')[0];
 // }
-const runTask = (tasks) => {
+const runTask = function (tasks) {
     const task = tasks.shift();
     if (taskRunned[task.href]) {
         isEnd();
