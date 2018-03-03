@@ -38,7 +38,7 @@ const runTask = function (tasks) {
                     link: $(el).attr('href')
                 });
             });
-            return tmp;
+            return JSON.stringify(tmp);
         });
         console.log(links);
         // const href = resolveUrl(el.href);
