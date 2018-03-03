@@ -40,7 +40,7 @@ const runTask = function (tasks) {
             });
             return tmp;
         });
-        console.log(links);
+        console.log(links.links.length);
         // const href = resolveUrl(el.href);
         // if ((href.startsWith('http://www.huaweicloud.com') 
         //     || href.startsWith('http://support.huaweicloud.com')
