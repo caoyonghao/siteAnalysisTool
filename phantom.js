@@ -10,17 +10,17 @@ const result = {
 
 const taskRunned = {};
 const tasks = [{href: 'http://www.huaweicloud.com/'}];
-const isEnd = () => {
-    if (tasks.length) {
-        runTask(tasks);
-    } else {
-        phantom.exit();
-        fs.writeFileSync('result.json', JSON.stringify(result, null, 2));
-    }
-}
-const resolveUrl = (url) => {
-    return url.split('?')[0].split('#')[0];
-}
+// const isEnd = () => {
+//     if (tasks.length) {
+//         runTask(tasks);
+//     } else {
+//         phantom.exit();
+//         fs.writeFileSync('result.json', JSON.stringify(result, null, 2));
+//     }
+// }
+// const resolveUrl = (url) => {
+//     return url.split('?')[0].split('#')[0];
+// }
 const runTask = (tasks) => {
     const task = tasks.shift();
     if (taskRunned[task.href]) {
@@ -29,7 +29,7 @@ const runTask = (tasks) => {
     taskRunned[task.href] = true;
     page.open(task.href, function() {
         const links = page.evaluate(function() {
-            var result = {
+            var tmp = {
                 host: window.location.host,
                 links: []
             };
@@ -38,7 +38,7 @@ const runTask = (tasks) => {
                     link: $(el).attr('href')
                 });
             });
-            return result;
+            return tmp;
         });
         console.log(links);
         // const href = resolveUrl(el.href);
