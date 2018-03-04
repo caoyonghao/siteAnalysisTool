@@ -73,7 +73,7 @@ const runTask = function (tasks) {
             return tmp;
         });
         data.links.forEach(function(el) {
-            var target = resolveUrl(el, data.host, data.href);
+            var target = resolveUrl(el.link, data.host, data.href);
             if (isToScan(target)) {
                 tasks.push({href: target});
             }
