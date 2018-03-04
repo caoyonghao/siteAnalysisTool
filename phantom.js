@@ -10,7 +10,7 @@ const result = {
 
 const taskRunned = {};
 const tasks = [{href: 'http://www.huaweicloud.com/'}];
-let count = 0;
+var count = 0;
 const isEnd = function() {
     if (tasks.length) {
         runTask(tasks);
