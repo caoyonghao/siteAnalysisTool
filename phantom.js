@@ -57,7 +57,7 @@ const runTask = function (tasks) {
         isEnd();
     }
     taskRunned[task.href] = true;
-    console.log(count++, task.href, tasks.length)
+    console.log(count++ + ' task href is: ' + task.href + ' remain:' + tasks.length)
     page.open(task.href, function() {
         const data = page.evaluate(function() {
             var tmp = {
@@ -78,6 +78,7 @@ const runTask = function (tasks) {
                 tasks.push({href: target});
             }
         });
+        console.log(tasks.length);
         isEnd();
     });
 }
