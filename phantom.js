@@ -23,7 +23,7 @@ const isEnd = function() {
 }
 const resolveUrl = function (url, host, href) {
     // remove param
-    let result = url.split('?')[0].split('#')[0];
+    var result = url.split('?')[0].split('#')[0];
     if (!result.startsWith('http')) {
         if (result.startsWith('//')) {
             result = 'http:' + result;
@@ -42,7 +42,7 @@ const resolveUrl = function (url, host, href) {
     return result;
 }
 const isToScan = function(url, taskRunned) {
-    let flag = false;
+    var flag = false;
     if ((url.startsWith('http://www.huaweicloud.com') 
         || url.startsWith('http://support.huaweicloud.com')
         || url.startsWith('http://activity.huaweicloud.com'))
