@@ -17,10 +17,10 @@ const isEnd = function() {
     if (tasks.length) {
         runTask(tasks);
     } else {
-        console.log('failLength', result.fail.length);
-        fs.writeFileSync('result' + new Date().getTime() + '.json', JSON.stringify(result, null, 2));
-        fs.writeFileSync('success' + new Date().getTime() + '.json', JSON.stringify(result.success, null, 2));
-        fs.writeFileSync('fail' + new Date().getTime() + '.json', JSON.stringify(result.fail, null, 2));
+        console.log('failLength', JSON.stringify(result));
+        // fs.writeFileSync('result' + new Date().getTime() + '.json', JSON.stringify(result, null, 2));
+        // fs.writeFileSync('success' + new Date().getTime() + '.json', JSON.stringify(result.success, null, 2));
+        // fs.writeFileSync('fail' + new Date().getTime() + '.json', JSON.stringify(result.fail, null, 2));
         phantom.exit();
     }
 }
@@ -33,64 +33,65 @@ const runTask = function (tasks) {
     taskRunned[task.href] = true;
     console.log(count++ + ' task href is: ' + task.href + ' remain:' + tasks.length)
     page.open(task.href, function(status) {
+        console.log(status)
         if (status === 'success') {
             result.success.push(task.href);
-        } else {
-            result.fail.push(task.href);
-        }
-        const data = page.evaluate(function(tasks) {
-            var resolveUrl = function (url, host, href) {
-                // remove param
-                var result = url.split('?')[0].split('#')[0];
-                if (!result.indexOf('http') === 0) {
-                    if (result.indexOf('//') === 0) {
-                        result = 'http:' + result;
-                    } else {
-                        if (result.indexOf('/') === 0) {
-                            result = host + result;
+            const data = page.evaluate(function(tasks) {
+                var resolveUrl = function (url, host, href) {
+                    // remove param
+                    var result = url.split('?')[0].split('#')[0];
+                    if (!result.indexOf('http') === 0) {
+                        if (result.indexOf('//') === 0) {
+                            result = 'http:' + result;
                         } else {
-                            if (href.indexOf('/') === (href.length - 1)) {
-                                result = href + result;
+                            if (result.indexOf('/') === 0) {
+                                result = host + result;
                             } else {
-                                result = href + '/' + result;
+                                if (href.indexOf('/') === (href.length - 1)) {
+                                    result = href + result;
+                                } else {
+                                    result = href + '/' + result;
+                                }
                             }
                         }
                     }
+                    return result;
                 }
-                return result;
-            }
-            var isToScan = function(url, taskRunned) {
-                var flag = false;
-                if ((url.indexOf('http://www.huaweicloud.com') === 0)) {
-                    flag = true;
+                var isToScan = function(url, taskRunned) {
+                    var flag = false;
+                    if ((url.indexOf('http://www.huaweicloud.com') === 0)) {
+                        flag = true;
+                    }
+                    return flag;
                 }
-                return flag;
-            }
-            var tmp = {
-                host: window.location.host,
-                href: window.location.href,
-                links: []
-            };
-            $('a').each(function(idx, el) {
-                var url = $(el).attr('href');
-                if (!url) {
-                    return;
-                }
-                url = resolveUrl(url, tmp.host, tmp.href);
-                if (isToScan(url)) {
-                    tmp.links.push({
-                        link: url
-                    });
+                var tmp = {
+                    host: window.location.host,
+                    href: window.location.href,
+                    links: []
+                };
+                $('a').each(function(idx, el) {
+                    var url = $(el).attr('href');
+                    if (!url) {
+                        return;
+                    }
+                    url = resolveUrl(url, tmp.host, tmp.href);
+                    if (isToScan(url)) {
+                        tmp.links.push({
+                            link: url
+                        });
+                    }
+                });
+                return tmp;
+            });
+            data.links.forEach(function(el) {
+                var target = el.link;
+                if (!taskRunned[target]) {
+                    tasks.push({href: target});
                 }
             });
-            return tmp;
-        });
-        data.links.forEach(function(el) {
-            var target = el.link;
-            if (!taskRunned[target]) {
-                tasks.push({href: target});
-            }
-        });
+        } else {
+            result.fail.push(task.href);
+        }
         isEnd();
     });
 }
