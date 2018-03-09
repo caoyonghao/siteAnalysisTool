@@ -20,9 +20,7 @@
     "cheerio": "^1.0.0-rc.2",
     "crawler": "^1.1.2",
     "jquery": "^3.3.1",
-    "jsdom": "^11.6.2",
-    "phantomjs": "^2.1.7",
-    "phantomjs-prebuilt": "^2.1.14"
+    "jsdom": "^11.6.2"
   },
   "devDependencies": {
     "phantom": "^4.0.12"
