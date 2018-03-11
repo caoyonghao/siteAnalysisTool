@@ -20,7 +20,7 @@ const exec = () => {
     
     crawler.on('close', (code) => {
         fs.writeFileSync('./log.log', log);
-        sendMail('yonghao.cao@huawei.com', new Date().getDate(), generateReport(require(`./result/${timeStamp}-fail.json`)), [
+        sendMail('yonghao.cao@huawei.com', `-${new Date().getMonth()}/${new Date().getDate()}`, generateReport(require(`./result/${timeStamp}-fail.json`)), [
             {
                 filename: `${timeStamp}-fail.json`,
                 path: `./result/${timeStamp}-fail.json`
@@ -32,7 +32,7 @@ const exec = () => {
     });
 }
 
-rule.minute = 40;
+rule.hour = 2;
 schedule.scheduleJob(rule, () => {
     console.log(`time now: ${new Date().getTime()}`);
     exec();
