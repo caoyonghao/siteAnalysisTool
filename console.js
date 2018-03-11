@@ -37,3 +37,4 @@ schedule.scheduleJob(rule, () => {
     console.log(`time now: ${new Date().getTime()}`);
     exec();
 });
+exec();
