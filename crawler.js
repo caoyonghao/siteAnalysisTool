@@ -39,17 +39,17 @@ const isToScan = (url, host, successTasks, failTasks) => {
 const isEnd = (res) => {
     while(tasks.length > 0) {
         const task = tasks.shift();
-        if (isToScan(task, res.request.uri.href, successTasks, failTasks)) {
-            console.log(`remain ${tasks.length}, scan ${task}`);
-            taskRunned[task] = true;
+        if (isToScan(task.uri, res.request.uri.href, successTasks, failTasks)) {
+            console.log(`remain ${tasks.length}, scan ${task.uri}`);
+            taskRunned[task.uri] = true;
             crawler.queue(task);
             break;
         }
     }
     if (tasks.length === 0) {
         console.log(`task finish, cost ${new Date().getTime() - startTime}`);
-        fs.writeFileSync('./result/success' + new Date().getTime() + '.json', JSON.stringify(successTasks, null, 2));
-        fs.writeFileSync('./result/fail' + new Date().getTime() + '.json', JSON.stringify(failTasks, null, 2));
+        fs.writeFileSync('./result/success' + startTime + '.json', JSON.stringify(successTasks, null, 2));
+        fs.writeFileSync('./result/fail' + startTime + '.json', JSON.stringify(failTasks, null, 2));
     }
 }
 var crawler = new Crawler({
@@ -58,7 +58,7 @@ var crawler = new Crawler({
     callback : function (error, res, done) {
         if(error || res.statusCode !== 200){
             console.log("error: ", res.request.uri.href);
-            failTasks[res.request.uri.href] = true;
+            failTasks[res.request.uri.href] = {parent: res.options.parent};
             isEnd(res);
         }else{
             successTasks[res.request.uri.href] = true;
@@ -68,7 +68,7 @@ var crawler = new Crawler({
             $('a').each((index, element) => {
                 const url = resolveUrl($(element).attr('href') || '', 'http' + res.request.uri.host, res.request.uri.href);
                 if (isToScan(url, res.request.uri.href, successTasks, failTasks)) {
-                    tasks.push(url);
+                    tasks.push({uri: url, parent: res.request.uri.href});
                 }
             });
 
@@ -79,4 +79,4 @@ var crawler = new Crawler({
 });
 
 // Queue just one URL, with default callback
-crawler.queue('http://www.huaweicloud.com/');
+crawler.queue({uri: 'http://www.huaweicloud.com/', parent: 'http://www.huaweicloud.com/'});
