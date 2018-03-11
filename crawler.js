@@ -23,9 +23,10 @@ const resolveUrl = (url, host, href) => {
 }
 const isToScan = (url, host, successTasks, failTasks) => {
     var flag = false;
-    if ((url.startsWith('http://www.huaweicloud.com')
-        || url.startsWith('http://support.huaweicloud.com')
-        || url.startsWith('http://activity.huaweicloud.com'))) {
+
+    // || url.startsWith('http://support.huaweicloud.com')
+    // || url.startsWith('http://activity.huaweicloud.com')
+    if ((url.startsWith('http://www.huaweicloud.com'))) {
         flag = true;
     }
     if (taskRunned[url]) {
