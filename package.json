@@ -12,7 +12,7 @@
   },
   "author": "",
   "license": "ISC",
-  "script": {
+  "scripts": {
     "start": "nohup node console.js>trace.log&"
   },
   "bugs": {
