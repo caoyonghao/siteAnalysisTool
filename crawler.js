@@ -5,6 +5,9 @@ const successTasks = {};
 const failTasks = {};
 const taskRunned = {};
 const startTime = new Date().getTime();
+const siteUrl = process.argv[2] || 'http://www.huaweicloud.com/';
+const taskId = process.argv[3] || startTime;
+
 const resolveUrl = (url, host, href) => {
     // remove param
     var result = url.split('?')[0].split('#')[0];
@@ -24,17 +27,14 @@ const resolveUrl = (url, host, href) => {
 const isToScan = (url, host, successTasks, failTasks) => {
     var flag = false;
 
-    // || url.startsWith('http://support.huaweicloud.com')
-    // || url.startsWith('http://activity.huaweicloud.com')
-    if ((url.startsWith('http://www.huaweicloud.com'))) {
+    if ((url.startsWith('http://www.huaweicloud.com'))
+        || url.startsWith('http://support.huaweicloud.com')
+        || url.startsWith('http://activity.huaweicloud.com')) {
         flag = true;
     }
     if (taskRunned[url]) {
         flag = false;
     }
-    // if (url.indexOf('@')) {
-    //     flag = false;
-    // }
     return flag;
 }
 const isEnd = (res) => {
@@ -49,8 +49,8 @@ const isEnd = (res) => {
     }
     if (tasks.length === 0) {
         console.log(`task finish, cost ${new Date().getTime() - startTime}`);
-        fs.writeFileSync('./result/success' + startTime + '.json', JSON.stringify(successTasks, null, 2));
-        fs.writeFileSync('./result/fail' + startTime + '.json', JSON.stringify(failTasks, null, 2));
+        fs.writeFileSync(`./result/${taskId}-success.json`, JSON.stringify(successTasks, null, 2));
+        fs.writeFileSync(`./result/${taskId}-fail.json`, JSON.stringify(failTasks, null, 2));
     }
 }
 var crawler = new Crawler({
@@ -80,4 +80,4 @@ var crawler = new Crawler({
 });
 
 // Queue just one URL, with default callback
-crawler.queue({uri: 'http://www.huaweicloud.com/', parent: 'http://www.huaweicloud.com/'});
+crawler.queue({uri: siteUrl, parent: siteUrl});

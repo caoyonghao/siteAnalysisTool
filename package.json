@@ -20,7 +20,9 @@
     "cheerio": "^1.0.0-rc.2",
     "crawler": "^1.1.2",
     "jquery": "^3.3.1",
-    "jsdom": "^11.6.2"
+    "jsdom": "^11.6.2",
+    "nodemailer": "^4.6.2",
+    "nodemailer-smtp-transport": "^2.7.4"
   },
   "devDependencies": {
     "phantom": "^4.0.12"
