@@ -12,6 +12,9 @@
   },
   "author": "",
   "license": "ISC",
+  "script": {
+    "start": "nohup node console.js>trace.log&"
+  },
   "bugs": {
     "url": "https://github.com/caoyonghao/siteAnalysisTool/issues"
   },
