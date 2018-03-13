@@ -31,8 +31,10 @@ const exec = () => {
         ]);
     });
 }
-
-rule.hour = 2;
+// 每天两点执行
+rule.hour =2;
+rule.minute =0;
+rule.second =0
 schedule.scheduleJob(rule, () => {
     console.log(`time now: ${new Date().getTime()}`);
     exec();
