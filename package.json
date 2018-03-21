@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nohup node console.js>trace.log&",
+    "build": "webpack",
+    "build-dev": "webpack -w -d"
   },
   "repository": {
     "type": "git",
@@ -12,9 +14,6 @@
   },
   "author": "",
   "license": "ISC",
-  "scripts": {
-    "start": "nohup node console.js>trace.log&"
-  },
   "bugs": {
     "url": "https://github.com/caoyonghao/siteAnalysisTool/issues"
   },
@@ -22,13 +21,33 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "crawler": "^1.1.2",
+    "express": "^4.16.2",
     "jquery": "^3.3.1",
     "jsdom": "^11.6.2",
+    "material-ui": "^0.20.0",
     "node-schedule": "^1.3.0",
     "nodemailer": "^4.6.2",
-    "nodemailer-smtp-transport": "^2.7.4"
+    "nodemailer-smtp-transport": "^2.7.4",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-tap-event-plugin": "^3.0.2"
   },
   "devDependencies": {
-    "phantom": "^4.0.12"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "html-webpack-plugin": "^3.0.7",
+    "phantom": "^4.0.12",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react",
+      "stage-1"
+    ]
   }
 }
