@@ -12,7 +12,6 @@ const exec = () => {
     let log = '';
     crawler.stdout.on('data', (data) => {
         log = `${log}${new Date()} INFO:${data}`;
-        console.log(data.toString());
     });
     
     crawler.stderr.on('data', (data) => {
