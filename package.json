@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nohup node console.js>trace.log&",
+    "watchdog": "nohup node console.js watchdog > trace.log&",
+    "mail": "nohup node console.js watchdog sendMail > trace.log&",
     "build": "webpack",
     "build-dev": "webpack -w -d"
   },
