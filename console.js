@@ -67,6 +67,7 @@ options.mode = args[0];
 options.sendMail = args[1];
 
 if (options.mode === 'watchdog') {
+    exec();
     setInterval(exec, 300000);
 } else {
     //每天两点执行
