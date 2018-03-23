@@ -30,7 +30,7 @@ Date.prototype.format = function(format) {
 }
 
 const exec = () => {
-    const timeStamp = new Date().getTime().format('yyyyMMdd_hh:mm:ss');
+    const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss');
     const crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
     let log = '';
     crawler.stdout.on('data', (data) => {
