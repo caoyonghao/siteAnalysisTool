@@ -48,7 +48,9 @@ const exec = () => {
             const failList = require(`./result/fail-${timeStamp}.json`);
             const length = Object.keys(failList).length;
             if (length) {
-                sendMail('yonghao.cao@huawei.com,huoxiangming@huawei.com,yangzhao15@huawei.com,wanglong42@huawei.com,yangzhongting@huawei.com,shengzhong@huawei.com', `-${new Date().getMonth() + 1}/${new Date().getDate()}`, generateReport(require(`./result/${timeStamp}-fail.json`)), [
+                sendMail('yonghao.cao@huawei.com,huoxiangming@huawei.com,yangzhao15@huawei.com,wanglong42@huawei.com,yangzhongting@huawei.com,shengzhong@huawei.com',
+                    `-${new Date().getMonth() + 1}/${new Date().getDate()}`,
+                    generateReport(require(`./result/fail-${timeStamp}.json`)), [
                     {
                         filename: `fail-${timeStamp}.json`,
                         path: `./result/fail-${timeStamp}.json`
