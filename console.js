@@ -2,7 +2,10 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const schedule = require("node-schedule")
 const sendMail = require('./lib/mail/mailServer');
+const makeSnaption = require('./lib/phantom/phantom');
 const generateReport = require('./lib/mail/generateReport');
+const config = require('./config/config');
+
 const rule = new schedule.RecurrenceRule();
 let options = {};
 
@@ -29,7 +32,7 @@ Date.prototype.format = function(format) {
     return format;
 }
 
-const exec = () => {
+const execCrawler = () => {
     const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss');
     const crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
     let log = '';
@@ -64,13 +67,18 @@ const exec = () => {
     });
 }
 
+const execSnapshot = (config) => {
+    makeSnaption(config);
+}
+
 const args = process.argv.splice(2);
 options.mode = args[0];
 options.sendMail = args[1];
-
-if (options.mode === 'watchdog') {
-    exec();
-    setInterval(exec, 300000);
+if (options.mode === 'snapshot') {
+    execSnapshot(config.snapshot);
+} else if (options.mode === 'watchdog') {
+    execCrawler();
+    setInterval(execCrawler, 300000);
 } else {
     //每天两点执行
     rule.hour =2;
@@ -78,7 +86,7 @@ if (options.mode === 'watchdog') {
     rule.second =0
     schedule.scheduleJob(rule, () => {
         console.log(`time now: ${new Date().getTime()}`);
-        exec();
+        execCrawler();
     });
 }
 
