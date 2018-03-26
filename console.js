@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const schedule = require("node-schedule")
 const sendMail = require('./lib/mail/mailServer');
-const makeSnaption = require('./lib/phantom/phantom');
+const {makeSnaption} = require('./lib/phantom/phantom');
 const generateReport = require('./lib/mail/generateReport');
 const config = require('./config/config');
 
@@ -32,11 +32,17 @@ Date.prototype.format = function(format) {
     return format;
 }
 
-const execCrawler = () => {
+const execCrawler = (runConfigtask) => {
     const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss');
-    const crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
+    let crawler;
+    if (runConfigtask) {
+        crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp, runConfigtask]);
+    } else {
+        crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
+    }
     let log = '';
     crawler.stdout.on('data', (data) => {
+        console.log(data.toString())
         log = `${log}${new Date()} INFO:${data}`;
     });
     
@@ -79,6 +85,8 @@ if (options.mode === 'snapshot') {
 } else if (options.mode === 'watchdog') {
     execCrawler();
     setInterval(execCrawler, 300000);
+} else if (options.mode === 'customCrawler') {
+    execCrawler(true);
 } else {
     //每天两点执行
     rule.hour =2;

@@ -23,5 +23,12 @@ module.exports = {
         id: 'help',
         url: 'https://support.huaweicloud.com/index.html'
     }]
+ },
+ crawler: {
+     tasks: [{
+         url: 'https://support.huaweicloud.com/index.html',
+         phantom: true,
+         filter: ['https://support.huaweicloud.com/', 'https://support.huaweicloud.com/']
+     }]
  }
 }
