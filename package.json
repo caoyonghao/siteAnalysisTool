@@ -8,6 +8,7 @@
     "watchdog": "nohup node console.js watchdog > trace.log&",
     "mail": "nohup node console.js watchdog sendMail > trace.log&",
     "snapshot": "nohup node console.js snapshot > trace.log&",
+    "customCrawler": "nohup node console.js customCrawler sendMail > trace.log&",
     "build": "webpack",
     "build-dev": "webpack -w -d"
   },
