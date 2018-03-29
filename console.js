@@ -36,7 +36,7 @@ const execCrawler = (runConfigtask) => {
     const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss');
     let crawler;
     if (runConfigtask) {
-        crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp, runConfigtask]);
+        crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp, run]);
     } else {
         crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
     }
@@ -55,8 +55,9 @@ const execCrawler = (runConfigtask) => {
         fs.writeFileSync('./log.log', log);
         if (options.sendMail) {
             const failList = require(`./result/fail-${timeStamp}.json`);
-            const length = Object.keys(failList).length;
-            if (length) {
+            const httpList = require(`./result/http-${timeStamp}.json`);
+            const failLength = Object.keys(failList).length;
+            if (failLength) {
                 sendMail('yonghao.cao@huawei.com,huoxiangming@huawei.com,yangzhao15@huawei.com,wanglong42@huawei.com,yangzhongting@huawei.com,shengzhong@huawei.com',
                     `-${new Date().getMonth() + 1}/${new Date().getDate()}`,
                     generateReport(require(`./result/fail-${timeStamp}.json`)), [
@@ -66,6 +67,12 @@ const execCrawler = (runConfigtask) => {
                     }, {
                         filename: `success-${timeStamp}.json`,
                         path: `./result/success-${timeStamp}.json`
+                    }, {
+                        filename: `trace-${timeStamp}.json`,
+                        path: `./result/trace-${timeStamp}.json`
+                    }, {
+                        filename: `http-${timeStamp}.json`,
+                        path: `./result/http-${timeStamp}.json`
                     }
                 ]);
             }
