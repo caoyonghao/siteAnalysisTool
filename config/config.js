@@ -3,10 +3,11 @@ module.exports = {
         tasks: [{
             id: 'wwwactivity',
             url: 'https://www.huaweicloud.com/index.html',
-            phantom: true,
+            phantom: false,
             filter: ['www.huaweicloud.com/', 'activity.huaweicloud.com/'],
-            type: 'loopTask',
-            email: false
+            type: 'onceTask',
+            email: true,
+            mailList: 'yonghao.cao@huawei.com'
         }]
     }
 }

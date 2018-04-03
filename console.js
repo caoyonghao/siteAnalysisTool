@@ -2,15 +2,16 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const schedule = require("node-schedule")
 const sendMail = require('./lib/mail/mailServer');
-const {makeSnaption} = require('./lib/phantom/phantom');
+const { makeSnaption } = require('./lib/phantom/phantom');
 const generateReport = require('./lib/mail/generateReport');
 const config = require('./config/config');
-const mailList = 'yonghao.cao@huawei.com,huoxiangming@huawei.com,yangzhao15@huawei.com,wanglong42@huawei.com,yangzhongting@huawei.com,shengzhong@huawei.com';
+// const mailList = 'yonghao.cao@huawei.com,huoxiangming@huawei.com,yangzhao15@huawei.com,wanglong42@huawei.com,yangzhongting@huawei.com,shengzhong@huawei.com';
+// const mailList = 'yonghao.cao@huawei.com';
 
 const rule = new schedule.RecurrenceRule();
 let options = {};
 
-Date.prototype.format = function(format) {
+Date.prototype.format = function (format) {
 
     var date = {
         "M+": this.getMonth() + 1,
@@ -35,27 +36,22 @@ Date.prototype.format = function(format) {
 
 const execCrawler = (task) => {
     const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss'),
-            {id, type, url, phantom, filter, email} = task;
+        { id, type, url, phantom, filter, email, mailList } = task;
 
     let crawler, log = '';
 
     crawler = spawn('node', ['./lib/crawler/crawler.js', timeStamp, id]);
-    // if (runConfigtask) {
-    //     crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp, run]);
-    // } else {
-    //     crawler = spawn('node', ['./lib/crawler/crawler.js', 'http://www.huaweicloud.com/', timeStamp]);
-    // }
-    
+
     crawler.stdout.on('data', (data) => {
         console.log(data.toString())
         log = `${log}${new Date()} INFO:${data}`;
     });
-    
+
     crawler.stderr.on('data', (data) => {
         log = `${log}${new Date()} ERROR:${data}`;
         console.log(data.toString());
     });
-    
+
     crawler.on('close', (code) => {
         fs.writeFileSync('./log.log', log);
         if (email) {
@@ -64,22 +60,22 @@ const execCrawler = (task) => {
             const failLength = Object.keys(failList).length;
             if (failLength) {
                 sendMail(mailList,
-                    `-${new Date().getMonth() + 1}/${new Date().getDate()} ${IDBCursorWithValue}`,
+                    `-${timeStamp} ${id}`,
                     generateReport(require(`./result/fail-${timeStamp}.json`)), [
-                    {
-                        filename: `fail-${timeStamp}.json`,
-                        path: `./result/${id}/fail-${timeStamp}.json`
-                    }, {
-                        filename: `success-${timeStamp}.json`,
-                        path: `./result/${id}/success-${timeStamp}.json`
-                    }, {
-                        filename: `trace-${timeStamp}.json`,
-                        path: `./result/${id}/trace-${timeStamp}.json`
-                    }, {
-                        filename: `http-${timeStamp}.json`,
-                        path: `./result/${id}/http-${timeStamp}.json`
-                    }
-                ]);
+                        {
+                            filename: `fail-${timeStamp}.json`,
+                            path: `./result/${id}/fail-${timeStamp}.json`
+                        }, {
+                            filename: `success-${timeStamp}.json`,
+                            path: `./result/${id}/success-${timeStamp}.json`
+                        }, {
+                            filename: `trace-${timeStamp}.json`,
+                            path: `./result/${id}/trace-${timeStamp}.json`
+                        }, {
+                            filename: `http-${timeStamp}.json`,
+                            path: `./result/${id}/http-${timeStamp}.json`
+                        }
+                    ]);
             }
         }
     });
@@ -102,25 +98,18 @@ if (snapshotTask) {
 }
 if (crawlerTask) {
     crawlerTask.forEach((el) => {
-        // console.log(el.id);
-        execCrawler(el);
+        if (el.type === 'loopTask') {
+            setInterval(() => { execCrawler(el) }, 300000);
+        } else if (el.type === 'timeTask') {
+            //每天两点执行
+            rule.hour = 2;
+            rule.minute = 0;
+            rule.second = 0;
+            schedule.scheduleJob(rule, () => {
+                execCrawler(el);
+            });
+        } else if (el.type === 'onceTask') {
+            execCrawler(el);
+        }
     })
 }
-// if (options.mode === 'snapshot') {
-//     execSnapshot(config.snapshot);
-// } else if (options.mode === 'watchdog') {
-//     execCrawler();
-//     setInterval(execCrawler, 300000);
-// } else if (options.mode === 'customCrawler') {
-//     execCrawler(true);
-// } else {
-//     //每天两点执行
-//     rule.hour = 2;
-//     rule.minute = 0;
-//     rule.second = 0;
-//     schedule.scheduleJob(rule, () => {
-//         console.log(`time now: ${new Date().getTime()}`);
-//         execCrawler();
-//     });
-// }
-
