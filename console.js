@@ -58,7 +58,13 @@ const execCrawler = (task) => {
             const failList = require(`./result/${id}/fail-${timeStamp}.json`);
             const httpList = require(`./result/${id}/http-${timeStamp}.json`);
             const failLength = Object.keys(failList).length;
-            if (failLength) {
+            let hasHWUrl = false;
+            Object.keys(failList).forEach((el) => {
+                if (el.indexOf('huaweicloud') > -1) {
+                    hasHWUrl = true;
+                }
+            })
+            if (failLength && hasHWUrl) {
                 sendMail(mailList,
                     `-${timeStamp} ${id}`,
                     generateReport(require(`./result/${id}/fail-${timeStamp}.json`)), [
