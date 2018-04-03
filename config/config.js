@@ -6,8 +6,16 @@ module.exports = {
             phantom: false,
             filter: ['www.huaweicloud.com/', 'activity.huaweicloud.com/'],
             type: 'onceTask',
-            email: true,
+            email: false,
             mailList: 'yonghao.cao@huawei.com'
+        }, {
+            id: 'support',
+            url: 'https://support.huaweicloud.com/',
+            phantom: true,
+            filter: ['support.huaweicloud.com'],
+            email: true,
+            mailList: 'yonghao.cao@huawei.com',
+            type: 'timeTask'
         }]
     }
 }
