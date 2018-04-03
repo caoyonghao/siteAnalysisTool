@@ -61,7 +61,7 @@ const execCrawler = (task) => {
             if (failLength) {
                 sendMail(mailList,
                     `-${timeStamp} ${id}`,
-                    generateReport(require(`./result/fail-${timeStamp}.json`)), [
+                    generateReport(require(`./result/${id}/fail-${timeStamp}.json`)), [
                         {
                             filename: `fail-${timeStamp}.json`,
                             path: `./result/${id}/fail-${timeStamp}.json`
