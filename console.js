@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const { injectDatePrototype } = require('./lib/others/util');
 const fs = require('fs');
 const schedule = require("node-schedule")
 const sendMail = require('./lib/mail/mailServer');
@@ -9,38 +10,24 @@ const config = require('./config/config');
 // const mailList = 'yonghao.cao@huawei.com';
 
 const rule = new schedule.RecurrenceRule();
-let options = {};
+const args = process.argv.splice(2);
+const snapshotTask = config.snapshot && config.snapshot.tasks;
+const crawlerTask = config.crawler && config.crawler.tasks;
 
-Date.prototype.format = function (format) {
-
-    var date = {
-        "M+": this.getMonth() + 1,
-        "d+": this.getDate(),
-        "h+": this.getHours(),
-        "m+": this.getMinutes(),
-        "s+": this.getSeconds(),
-        "q+": Math.floor((this.getMonth() + 3) / 3),
-        "S+": this.getMilliseconds()
-    };
-    if (/(y+)/i.test(format)) {
-        format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
-    }
-    for (var k in date) {
-        if (new RegExp("(" + k + ")").test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length == 1
-                ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
-        }
-    }
-    return format;
-}
+injectDatePrototype();
 
 const execCrawler = (task) => {
-    const timeStamp = new Date().format('yyyyMMdd_hh:mm:ss'),
-        { id, type, url, phantom, filter, email, mailList } = task;
+    const { time, id, type, target, phantom, filter, email, mailList, deep } = task;
+    const  timeStamp = time ? time : new Date().format('yyyyMMdd_hh:mm:ss');
 
-    let crawler, log = '';
+    let crawler, log = '', cmd = ['./lib/crawler/crawler.js'];
+    
+    if (id) cmd.push(`--id=${id}`);
+    if (timeStamp) cmd.push(`--time=${timeStamp}`);
+    if (deep) cmd.push(`--deep=${deep}`);
+    if (target) cmd.push(`--target=${target}`);
 
-    crawler = spawn('node', ['./lib/crawler/crawler.js', timeStamp, id]);
+    crawler = spawn('node', cmd);
 
     crawler.stdout.on('data', (data) => {
         console.log(data.toString())
@@ -91,31 +78,44 @@ const execSnapshot = (config) => {
     makeSnaption(config);
 }
 
-const args = process.argv.splice(2);
-options.mode = args[0];
-options.sendMail = args[1];
-const snapshotTask = config.snapshot && config.snapshot.tasks;
-const crawlerTask = config.crawler && config.crawler.tasks;
-
-if (snapshotTask) {
-    snapshotTask.forEach((el) => {
-        // console.log(el.id);
-    })
-}
-if (crawlerTask) {
-    crawlerTask.forEach((el) => {
-        if (el.type === 'loopTask') {
-            setInterval(() => { execCrawler(el) }, 300000);
-        } else if (el.type === 'timeTask') {
-            //每天两点执行
-            rule.hour = 2;
-            rule.minute = 0;
-            rule.second = 0;
-            schedule.scheduleJob(rule, () => {
+const autoRun = () => {
+    if (snapshotTask) {
+        snapshotTask.forEach((el) => {
+            // console.log(el.id);
+        })
+    }
+    if (crawlerTask) {
+        crawlerTask.forEach((el) => {
+            if (el.type === 'loopTask') {
+                setInterval(() => { execCrawler(el) }, 300000);
+            } else if (el.type === 'timeTask') {
+                //每天两点执行
+                rule.hour = 2;
+                rule.minute = 0;
+                rule.second = 0;
+                schedule.scheduleJob(rule, () => {
+                    execCrawler(el);
+                });
+            } else if (el.type === 'onceTask') {
                 execCrawler(el);
-            });
-        } else if (el.type === 'onceTask') {
-            execCrawler(el);
-        }
-    })
+            }
+        })
+    }
 }
+
+const setupCrawlerTask = () => {
+    // inject test data
+    const id = 'test',
+        type = 'onceTask',
+        deep = 1,
+        time = '123',
+        target = 'http://www.huaweicloud.com';
+
+    execCrawler({ id, type, deep, target, time })
+}
+const queryCrawlerTask = () => {
+
+}
+
+setupCrawlerTask()
+module.exports = { autoRun, crawler: { setupCrawlerTask, queryCrawlerTask } };

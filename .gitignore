@@ -1,4 +1,4 @@
 node_modules/
-result/*.json
+result/*
 log.log
 launch.json
