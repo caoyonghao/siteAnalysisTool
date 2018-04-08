@@ -14,6 +14,11 @@ const args = process.argv.splice(2);
 const snapshotTask = config.snapshot && config.snapshot.tasks;
 const crawlerTask = config.crawler && config.crawler.tasks;
 
+const RUNNING = 'running';
+const FINISH = 'finish';
+
+const __tasks = [];
+
 injectDatePrototype();
 
 const execCrawler = (task) => {
@@ -41,9 +46,9 @@ const execCrawler = (task) => {
 
     crawler.on('close', (code) => {
         fs.writeFileSync('./log.log', log);
+        const failList = require(`./result/${id}/fail-${timeStamp}.json`);
+        const httpList = require(`./result/${id}/http-${timeStamp}.json`);
         if (email) {
-            const failList = require(`./result/${id}/fail-${timeStamp}.json`);
-            const httpList = require(`./result/${id}/http-${timeStamp}.json`);
             const failLength = Object.keys(failList).length;
             let hasHWUrl = false;
             Object.keys(failList).forEach((el) => {
@@ -71,7 +76,15 @@ const execCrawler = (task) => {
                     ]);
             }
         }
+        __tasks.forEach((el) => {
+            if (el.id === id) {
+                el.status = FINISH;
+                el.failList = failList;
+            }
+        });
     });
+
+    __tasks.push({id, target, status: RUNNING});
 }
 
 const execSnapshot = (config) => {
@@ -103,19 +116,26 @@ const autoRun = () => {
     }
 }
 
-const setupCrawlerTask = () => {
+const setupCrawlerTask = ({ id, type, time, target }) => {
     // inject test data
-    const id = 'test',
-        type = 'onceTask',
-        deep = 1,
-        time = '123',
-        target = 'http://www.huaweicloud.com';
+    let deep = 1;
+    type = 'onceTask';
+    time = '123';
 
-    execCrawler({ id, type, deep, target, time })
+    execCrawler({ id, type, deep, target, time });
 }
-const queryCrawlerTask = () => {
-
+const queryCrawlerTask = (id) => {
+    let res = []
+    if (id) {
+        __tasks.forEach((el) => {
+            if (el.id === id) {
+                res.push(el);
+            }
+        })
+    } else {
+        res = __tasks;
+    }
+    return res;
 }
 
-setupCrawlerTask()
 module.exports = { autoRun, crawler: { setupCrawlerTask, queryCrawlerTask } };
