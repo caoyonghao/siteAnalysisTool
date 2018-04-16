@@ -42,7 +42,7 @@ function SimpleTable(props) {
               <TableRow key={n.url}>
                 <TableCell>{n.text}</TableCell>
                 <TableCell>{n.url}</TableCell>
-                <TableCell>{n.sentiment[1]}</TableCell>
+                <TableCell>{(n.sentiment[1] + '').substring(0, 6)}</TableCell>
               </TableRow>
             );
           })}
