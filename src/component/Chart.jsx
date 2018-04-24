@@ -34,7 +34,7 @@ class Chart extends React.Component {
     render() {
         return (
             <div style={{padding: '20px 0'}}>
-                <BarChart data={this.state.data} options={this.state.option} width="600" height="400" />
+                <BarChart data={this.state.data} options={this.state.option} width="600" height="500" />
             </div>
         );
     }

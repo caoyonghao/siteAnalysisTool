@@ -2,11 +2,14 @@ const bosonnlp = require('bosonnlp');
 const fs = require('fs');
 const _ = require('lodash');
 
+const _dir = 'normal';
+const _source = 'aliyun-aftersales-bbs'
+
 const REPLY_WEIGHT = 10;
 const nlp = new bosonnlp.BosonNLP('K9qEzsHn.24856.HLi-kVFBCE1V');
-const raw = require('./../result/bbs.json');
-
-const sorted = _.sortBy(_.filter(raw, { status: '[求助]' }), [(o) => -(parseInt(o.view) + REPLY_WEIGHT * parseInt(o.reply))]);
+const raw = require(`./../result/${_source}.json`);
+console.log(raw.length)
+const sorted = _.sortBy(_.filter(raw, { status: '[售后服务]' }), [(o) => -(parseInt(o.view) + REPLY_WEIGHT * parseInt(o.reply))]);
 fs.writeFileSync(`./result/bbs-sorted.json`, JSON.stringify(sorted, null, 2));
 
 const dataSince2017 = _.filter(sorted, o => o.time.startsWith('2016') || o.time.startsWith('2017') || o.time.startsWith('2018'));
